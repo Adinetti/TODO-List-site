@@ -1,4 +1,5 @@
 static
 media
+migrations
 __pycache__
 *.pyc
