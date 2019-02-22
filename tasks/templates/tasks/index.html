@@ -2,9 +2,18 @@
 {%block title%}{%endblock%}
 
 {%block content%}
-<div class="container-fluid text-center">
-        <div class="container-fluid ">                
-                <h1>WELLCOME {{user.username}}! {{id}}</h1>
-        </div>
+<div class="container-fluid">
+        <br>       
+        <div class="row justify-content-center">  
+                <div class="col-sm-5">
+                        <h3>Your tasks {%if tag%}({{tag.name}}){%endif%}</h3>
+                </div>
+                <div class="col-sm-1">
+                        <button type="button" class="btn btn-primary"  data-toggle="modal" data-target="#addTask">Add task</button>
+                </div>
+        </div>              
+        <br>
+        {%include "tasks/tasksList.html"%}      
 </div>
+{%include "tasks/addTask.html"%}
 {%endblock%}
