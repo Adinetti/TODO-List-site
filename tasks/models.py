@@ -4,7 +4,7 @@ from django.contrib.auth.models import User
 class Tag(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     name = models.CharField(max_length=50)
-    slug = models.SlugField(max_length=50)
+    slug = models.SlugField(max_length=50, unique=True)
 
     def __str__(self):
         return self.name
@@ -16,7 +16,7 @@ class Tag(models.Model):
 class Task(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     title = models.CharField(max_length=120)
-    slug = models.SlugField(max_length=120)
+    slug = models.SlugField(max_length=250, unique=True)
     body = models.TextField()
     tags = models.ManyToManyField(Tag, blank=True)
     parent = models.ForeignKey("self", null=True, blank=True, related_name="children", on_delete=models.CASCADE)
@@ -30,5 +30,5 @@ class Task(models.Model):
                                     self.date_of_creation.isoformat(timespec='seconds'))
 
     def get_absolute_url(self):
-        return "{}/{}".format(self.user.username, self.id)
+        return "{}".format(self.slug)
 
