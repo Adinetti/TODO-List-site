@@ -1,39 +1,46 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
+from django.views.generic import View
 
+from .utils.View import WelcomeView
 from .models import Task, Tag
 
-def index(request):
-    template = 'tasks/wellcome.html'
-    context = {}
-    if request.user.is_authenticated:
-        template = 'tasks/index.html'
-        tasks = Task.objects.filter(user=request.user)
-        context['tasks'] = tasks
-    return render(request, template, context)
+class Index(WelcomeView, View):
+    def get(self, request):        
+        if request.user.is_authenticated:
+            self.template = 'tasks/index.html'
+            tasks = Task.objects.filter(user=request.user)
+            self.context['tasks'] = tasks
+        return render(request, self.template, self.context)
 
-def logout_user(request):
-    logout(request)
-    return redirect("/")
 
-def login_user(request):
-    if request.method == "POST":
+class Tag(WelcomeView, View):
+    def get(self, request, tag_slug):
+        if request.user.is_authenticated:
+            self.template = 'tasks/index.html'
+            task_tag = Tag.objects.get(slug=tag_slug)            
+            tasks = Task.objects.filter(user=request.user).filter(tags=task_tag)
+            self.context['tasks'] = tasks
+            self.context['tag'] = task_tag
+        return render(request, self.template, self.context)
+
+class LogoutUser(View):
+    def get(self, request):
+        logout(request)
+        return redirect("/")
+
+class LoginUser(View):
+    def get(self, request):
+        return render(request, 'tasks/login.html')
+
+    def post(self, request):
         username = request.POST['username']
         password = request.POST['password']
         user = authenticate(request, username=username, password=password)
         if user is not None:
             login(request, user)
             return redirect("/")
-    return render(request, 'tasks/login.html')
+        return render(request, 'tasks/login.html')
 
-def tag(request, tag_slug):
-    template = 'tasks/wellcome.html'
-    context = {}
-    if request.user.is_authenticated:
-        task_tag = Tag.objects.get(slug=tag_slug)
-        template = 'tasks/index.html'
-        tasks = Task.objects.filter(user=request.user).filter(tags=task_tag)
-        context['tasks'] = tasks
-        context['tag'] = task_tag
-    return render(request, template, context)
+
 
