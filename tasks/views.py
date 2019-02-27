@@ -4,6 +4,7 @@ from django.views.generic import View
 
 from .utils.View import WelcomeView
 from .models import Task, Tag
+from .forms import LogingForm
 
 class Index(WelcomeView, View):
     def get(self, request):        
@@ -31,16 +32,18 @@ class LogoutUser(View):
 
 class LoginUser(View):
     def get(self, request):
-        return render(request, 'tasks/login.html')
+        form = LogingForm()
+        return render(request, 'tasks/login.html', context={"form": form, "error": False})
 
     def post(self, request):
-        username = request.POST['username']
-        password = request.POST['password']
-        user = authenticate(request, username=username, password=password)
-        if user is not None:
-            login(request, user)
-            return redirect("/")
-        return render(request, 'tasks/login.html')
+        bound_form = LogingForm(request.POST)
+        if bound_form.is_valid():
+            user = authenticate(request, username=bound_form.cleaned_data["username"], password=bound_form.cleaned_data["password"])       
+            if user:
+                login(request, user)
+                return redirect("/")
+        return render(request, 'tasks/login.html', context={"form": bound_form, "error": True})
+
 
 
 
