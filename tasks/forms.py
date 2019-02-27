@@ -8,18 +8,27 @@ class LogingForm(forms.Form):
     password = forms.CharField(widget = forms.PasswordInput)
 
     username.widget.attrs.update({
-        "class": "form-control",
-        "type" : "text",
-        "placeholder": "Enter username"
+        'class': 'form-control',
+        'placeholder': 'Enter username'
     })
 
     password.widget.attrs.update({
-        "class": "form-control",
-        "placeholder": "Enter password"
+        'class': 'form-control',
+        'placeholder': 'Enter password'
     })
 
 
-class CreateTask(forms.ModelForm):
+class CreateTaskForm(forms.ModelForm):
     class Meta:
         model = Task
-        fields = ['title', 'body', 'tags', 'deadline']
+        fields = ['title', 'body',]
+        widgets = {
+            'title': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Task title'
+            }),
+            'body': forms.Textarea(attrs={
+                'class': 'form-control',
+                'placeholder': 'Describe task'
+            })
+        }

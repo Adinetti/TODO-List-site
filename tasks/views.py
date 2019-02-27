@@ -1,10 +1,11 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.views.generic import View
+from django.utils.text import slugify
 
-from .utils.View import WelcomeView
+from .utils import WelcomeView
 from .models import Task, Tag
-from .forms import LogingForm
+from .forms import LogingForm, CreateTaskForm
 
 class Index(WelcomeView, View):
     def get(self, request):        
@@ -31,19 +32,58 @@ class LogoutUser(View):
         return redirect("/")
 
 class LoginUser(View):
+    context = {}    
+
     def get(self, request):
-        form = LogingForm()
-        return render(request, 'tasks/login.html', context={"form": form, "error": False})
+        if request.user.is_authenticated:
+            self.template = 'tasks/login.html'
+            self.context['form'] = LogingForm()
+            self.context['error'] = False
+        return render(request, self.template, self.context)
 
     def post(self, request):
-        bound_form = LogingForm(request.POST)
-        if bound_form.is_valid():
-            user = authenticate(request, username=bound_form.cleaned_data["username"], password=bound_form.cleaned_data["password"])       
-            if user:
-                login(request, user)
-                return redirect("/")
-        return render(request, 'tasks/login.html', context={"form": bound_form, "error": True})
+        if request.user.is_authenticated:
+            self.template = 'tasks/login.html'
+            self.context['form'] = LogingForm(request.POST)
+            if bound_form.is_valid():
+                user = authenticate(
+                    request, 
+                    username=self.context['form'].cleaned_data["username"], 
+                    password=self.context['form'].cleaned_data["password"]
+                )       
+                if user:
+                    login(request, user)
+                    return redirect("/")
+        return render(request, self.template, self.context)
 
 
+class CreateTask(WelcomeView, View):
+    def get(self, request):
+        if request.user.is_authenticated:
+            self.template = 'tasks/createTask.html'
+            form = CreateTaskForm()
+            self.context['form'] = form
+            self.context['button'] = 'save'
+        return render(request, self.template, self.context)
 
+    def post(self, request):
+        if request.user.is_authenticated:
+            self.template = 'tasks/createTask.html'
+            bound_form = CreateTaskForm(request.POST)
+            self.context['form'] = bound_form
+            self.context['button'] = 'save'
+            if bound_form.is_valid():
+                try:
+                    task_title = bound_form.cleaned_data['title']
+                    task = Task(
+                        user = request.user,
+                        title = task_title,
+                        body = bound_form.cleaned_data['body'],
+                        slug = request.user.username + "_" + slugify(task_title)
+                    )
+                    task.save()
+                    return redirect('/')
+                except:
+                    return render(request, self.template, self.context)
+        return render(request, self.template, self.context)
 

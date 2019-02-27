@@ -1,15 +1,21 @@
 {%extends "tasks/base.html"%}
 {%block title%}{%endblock%}
 
+{%block addTaskButton%}
+<a class="btn btn-primary" href="{%url 'createTask'%}" role="button">Add task</a>
+{%endblock%}
+
 {%block content%}
 <div class="container-fluid">
-        <br>       
+        <br>     
+        {%if tag%}  
         <div class="row justify-content-center text-center">  
                 <div class="col-sm-6">
-                        <h2>Your tasks {%if tag%}({{tag.name}}){%endif%}</h2>
+                        <h2>{{tag.name}}</h2>
                 </div>
         </div>              
         <br>
+        {%endif%}
         {%include "tasks/tasksList.html"%}      
 </div>
 {%include "tasks/addTask.html"%}
