@@ -23,6 +23,7 @@ class Task(models.Model):
     is_done = models.BooleanField(default=False)
     date_of_creation = models.DateTimeField(auto_now_add=True)
     date_of_ending = models.DateTimeField(null=True, blank=True)
+    deadline = models.DateTimeField(null=True, blank=True)
 
     def __str__(self):
         return "{} ({}: {})".format(self.title, 

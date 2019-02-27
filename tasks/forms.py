@@ -1,5 +1,5 @@
 from django import forms
-from .models import User
+from .models import Task
 from django.core.exceptions import ValidationError
 from django.contrib.auth import authenticate
 
@@ -18,3 +18,8 @@ class LogingForm(forms.Form):
         "placeholder": "Enter password"
     })
 
+
+class CreateTask(forms.ModelForm):
+    class Meta:
+        model = Task
+        fields = ['title', 'body', 'tags', 'deadline']
