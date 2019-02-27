@@ -31,5 +31,5 @@ class Task(models.Model):
                                     self.date_of_creation.isoformat(timespec='seconds'))
 
     def get_absolute_url(self):
-        return "{}".format(self.slug)
+        return "/task/{}".format(self.slug)
 

@@ -1,0 +1,25 @@
+{%extends "tasks/base.html"%}
+{%block title%}| Task: {{main_task.title}}{%endblock%}
+
+{%block addTaskButton%}
+<a class="btn btn-primary" href="#" role="button">Add task</a>
+{%endblock%}
+
+{%block content%}
+<div class="container-fluid">
+    <br>
+    <div class="row justify-content-center">
+        <div class="col-sm-12 ">
+            <h2>{{main_task.title | capfirst}}</h2>
+        </div>
+
+    </div>
+    <div class="row justify-content-center">
+        <div class="col-sm-12 alert alert-secondary">
+            {{main_task.body}}
+        </div>
+    </div>
+    <br>
+    {%include "tasks/tasksList.html"%}
+</div>
+{%endblock%}

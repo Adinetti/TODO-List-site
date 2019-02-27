@@ -15,6 +15,14 @@ class Index(WelcomeView, View):
             self.context['tasks'] = tasks
         return render(request, self.template, self.context)
 
+class TaskDetail(WelcomeView, View):
+    def get(self, request, task_slug):        
+        if request.user.is_authenticated:
+            self.template = 'tasks/detail.html'
+            task = Task.objects.get(slug=task_slug)
+            self.context['main_task'] = task
+            self.context['tasks'] = task.children.all()
+        return render(request, self.template, self.context)
 
 class Tag(WelcomeView, View):
     def get(self, request, tag_slug):
@@ -32,28 +40,26 @@ class LogoutUser(View):
         return redirect("/")
 
 class LoginUser(View):
-    context = {}    
+    context = {'button':'Loging'}    
+    template = 'tasks/loging.html'
+
 
     def get(self, request):
-        if request.user.is_authenticated:
-            self.template = 'tasks/login.html'
-            self.context['form'] = LogingForm()
-            self.context['error'] = False
+        self.context['form'] = LogingForm()
+        self.context['error'] = False
         return render(request, self.template, self.context)
 
     def post(self, request):
-        if request.user.is_authenticated:
-            self.template = 'tasks/login.html'
-            self.context['form'] = LogingForm(request.POST)
-            if bound_form.is_valid():
-                user = authenticate(
-                    request, 
-                    username=self.context['form'].cleaned_data["username"], 
-                    password=self.context['form'].cleaned_data["password"]
-                )       
-                if user:
-                    login(request, user)
-                    return redirect("/")
+        self.context['form'] = LogingForm(request.POST)
+        if self.context['form'].is_valid():
+            user = authenticate(
+                request, 
+                username=self.context['form'].cleaned_data["username"], 
+                password=self.context['form'].cleaned_data["password"]
+            )       
+            if user:
+                login(request, user)
+                return redirect("/")
         return render(request, self.template, self.context)
 
 
@@ -86,4 +92,5 @@ class CreateTask(WelcomeView, View):
                 except:
                     return render(request, self.template, self.context)
         return render(request, self.template, self.context)
+
 

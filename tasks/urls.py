@@ -6,6 +6,6 @@ urlpatterns = [
     path('login', views.LoginUser.as_view(), name="login"),
     path('tag/<slug:tag_slug>', views.Tag.as_view(), name="tag"),
     path('create_task', views.CreateTask.as_view(), name="createTask"),
-    
+    path('task/<str:task_slug>', views.TaskDetail.as_view(), name="task"),
     path('', views.Index.as_view(), name="index"),
 ]
