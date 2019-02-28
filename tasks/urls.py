@@ -5,6 +5,7 @@ urlpatterns = [
     path('logout', views.LogoutUser.as_view(), name="logout"),
     path('login', views.LoginUser.as_view(), name="login"),
     path('tag/<slug:tag_slug>', views.Tag.as_view(), name="tag"),
+    path('done_task', views.DoneTask.as_view(), name="doneTask"),
     path('create_task', views.CreateTask.as_view(), name="createTask"),
     path('add_to_task/<slug:task_slug>', views.CreateTask.as_view(), name="addToTask"),
     path('task/<slug:task_slug>', views.TaskDetail.as_view(), name="task"),

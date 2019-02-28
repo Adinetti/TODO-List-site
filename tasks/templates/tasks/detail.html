@@ -7,19 +7,77 @@
 
 {%block content%}
 <div class="container-fluid">
-    <br>
-    <div class="row justify-content-center">
-        <div class="col-sm-12 ">
-            <h2>{{main_task.title | capfirst}}</h2>
+    <div class="row pt-2 {%if main_task.done%}bg-success text-white{%endif%}" id="main_task">
+        <div class="col-auto mr-auto">
+            <h2 id="main_task_title">{{main_task.title | capfirst}}</h2>
         </div>
-
+        <div class="col-auto">
+            <a class="btn btn-primary"
+                href="{%if main_task.parent%}{{main_task.parent.get_absolute_url}}{%else%}/{%endif%}"
+                role="button">Parent</a>
+            <button type="button" class="btn btn-primary mr-auto" data-toggle="modal"
+                data-target="#exampleModal">Done</button>
+        </div>
     </div>
-    <div class="row justify-content-center">
-        <div class="col-sm-12 alert alert-secondary">
-            {{main_task.body|truncatewords:3}}
+    <div class="row bg-info text-white p-2">
+        <div class="col-sm-12">
+            {{main_task.body}}
         </div>
     </div>
     <br>
     {%include "tasks/tasksList.html"%}
 </div>
+
+<!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Done this task</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure done this task?</p>
+            </div>
+            <div class="modal-footer">
+                {% csrf_token %}
+                <button type="button" class="btn btn-secondary" data-dismiss="modal" id="doneTask">Yes</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal">No</button>
+            </div>
+        </div>
+    </div>
+</div>
+{%endblock%}
+
+{%block javascript%}
+<script>
+    let button = document.getElementById("doneTask");
+    button.onclick = function () {
+        let xhr = new XMLHttpRequest();
+        let csrftoken = document.querySelector("[name=csrfmiddlewaretoken]");
+        data = "slug=" + "{{main_task.slug}}";        
+        
+        xhr.open("POST", "{%url 'doneTask'%}", true);
+        xhr.setRequestHeader("X-CSRFToken", csrftoken.value);
+        xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+        xhr.send(data);
+
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState != 4) return;
+            if (xhr.status != 200) {
+                alert(xhr.status + ': ' + xhr.statusText);
+            } else {
+                document.getElementById("main_task").setAttribute("class", "row pt-2 bg-success text-white");
+                document.getElementById("main_task_title").innerHTML = "{{main_task.title|capfirst}} (done)";
+                let cards = document.querySelectorAll("[name=task_card]");
+                for(let card of cards){
+                    card.setAttribute("class", "card bg-success text-white mb-3");
+                }
+            }
+        }
+    };
+</script>
 {%endblock%}

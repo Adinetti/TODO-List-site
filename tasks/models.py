@@ -20,7 +20,7 @@ class Task(models.Model):
     body = models.TextField()
     tags = models.ManyToManyField(Tag, blank=True)
     parent = models.ForeignKey("self", null=True, blank=True, related_name="children", on_delete=models.CASCADE)
-    is_done = models.BooleanField(default=False)
+    done = models.BooleanField(default=False)
     date_of_creation = models.DateTimeField(auto_now_add=True)
     date_of_ending = models.DateTimeField(null=True, blank=True)
     deadline = models.DateTimeField(null=True, blank=True)

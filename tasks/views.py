@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, HttpResponse
 from django.contrib.auth import authenticate, login, logout
 from django.views.generic import View
 from django.utils.text import slugify
@@ -105,3 +105,17 @@ class CreateTask(WelcomeView, View):
         )
         task.parent=self.parent
         task.save()
+
+
+class DoneTask(View):
+    def post(self, request):
+        print(request.POST["slug"])
+        task = Task.objects.get(slug=request.POST["slug"])
+        
+        for child in task.children.all():
+            child.done = True
+            child.save()
+
+        task.done = True
+        task.save()
+        return HttpResponse("Ok", content_type="application/json")
