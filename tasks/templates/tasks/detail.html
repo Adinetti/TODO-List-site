@@ -2,7 +2,7 @@
 {%block title%}| Task: {{main_task.title}}{%endblock%}
 
 {%block addTaskButton%}
-<a class="btn btn-primary" href="#" role="button">Add task</a>
+<a class="btn btn-primary" href="/add_to_task/{{main_task.slug}}" role="button">Add task</a>
 {%endblock%}
 
 {%block content%}
@@ -16,7 +16,7 @@
     </div>
     <div class="row justify-content-center">
         <div class="col-sm-12 alert alert-secondary">
-            {{main_task.body}}
+            {{main_task.body|truncatewords:3}}
         </div>
     </div>
     <br>
