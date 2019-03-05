@@ -12,7 +12,7 @@ class Index(WelcomeView, View):
     def get(self, request):
         if request.user.is_authenticated:
             self.template = 'tasks/index.html'
-            tasks = Task.objects.filter(user=request.user).filter(parent=None)
+            tasks = Task.objects.filter(user=request.user).filter(parent=None).order_by('date_of_creation')[::-1]
             self.context['tasks'] = tasks
         return render(request, self.template, self.context)
 
@@ -23,7 +23,7 @@ class TaskDetail(WelcomeView, View):
             self.template = 'tasks/detail.html'
             task = Task.objects.get(slug=task_slug)
             self.context['main_task'] = task
-            self.context['tasks'] = task.children.all()
+            self.context['tasks'] = task.children.all().order_by('date_of_creation')[::-1]
         return render(request, self.template, self.context)
 
 
@@ -80,8 +80,8 @@ class CreateTask(WelcomeView, View):
                 self.parent = Task.objects.get(slug=kwargs.get('task_slug'))
                 self.url = self.parent.get_absolute_url()
             if self.context['form'].is_valid():
-                try:
-                    self.create_task()
+                try:                    
+                    self.create_task(request)
                     return redirect(self.url)
                 except:
                     return render(request, self.template, self.context)
@@ -94,15 +94,20 @@ class CreateTask(WelcomeView, View):
         self.parent = None
         self.url = '/'
 
-    def create_task():
+    def create_task(self, request):
+        
         task_title = self.context['form'].cleaned_data['title']
+        print(self.context['form'].cleaned_data['title'])
         task = Task(
             user=request.user,
             title=task_title,
             body=self.context['form'].cleaned_data['body'],
+            tag=self.context['form'].cleaned_data['tag'],
             slug=request.user.username + "_" + slugify(task_title)
         )
+        
         task.parent=self.parent
+        
         task.save()
 
 
