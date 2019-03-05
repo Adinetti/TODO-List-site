@@ -7,9 +7,9 @@
                                 <p class="card-text">{{task.body|truncatewords:3}}</p>
                         </div>
                         <div class="card-footer bg-transparent text-right">
-                                {%for tag in task.tags.all%}
-                                <a href="{{tag.get_absolute_url}}" class="badge badge-secondary mr-1">{{tag.name}}</a>
-                                {%endfor%}
+                                {%if task.tag%}
+                                <a href="{{task.tag.get_absolute_url}}" class="badge badge-secondary mr-1">{{task.tag.name}}</a>
+                                {%endif%}
                                 <a href="{{task.get_absolute_url}}" class="btn btn-primary text-right">open</a>
                         </div>
                 </div>

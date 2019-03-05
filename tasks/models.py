@@ -18,7 +18,7 @@ class Task(models.Model):
     title = models.CharField(max_length=120)
     slug = models.SlugField(max_length=250, unique=True)
     body = models.TextField()
-    tags = models.ManyToManyField(Tag, blank=True)
+    tag = models.ForeignKey(Tag, on_delete=models.CASCADE, null=True, blank=True)
     parent = models.ForeignKey("self", null=True, blank=True, related_name="children", on_delete=models.CASCADE)
     done = models.BooleanField(default=False)
     date_of_creation = models.DateTimeField(auto_now_add=True)

@@ -27,15 +27,14 @@ class TaskDetail(WelcomeView, View):
         return render(request, self.template, self.context)
 
 
-class Tag(WelcomeView, View):
+class TagIndex(WelcomeView, View):
     def get(self, request, tag_slug):
         if request.user.is_authenticated:
-            self.template = 'tasks/index.html'
+            self.template = 'tasks/tagIndex.html'
             task_tag = Tag.objects.get(slug=tag_slug)
-            tasks = Task.objects.filter(
-                user=request.user).filter(tags=task_tag)
+            tasks = Task.objects.filter(user=request.user).filter(tag=task_tag)
             self.context['tasks'] = tasks
-            self.context['tag'] = task_tag
+            self.context['tagName'] = task_tag.name
         return render(request, self.template, self.context)
 
 

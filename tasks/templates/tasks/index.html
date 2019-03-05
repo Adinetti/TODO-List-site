@@ -8,14 +8,6 @@
 {%block content%}
 <div class="container-fluid">
         <br>     
-        {%if tag%}  
-        <div class="row justify-content-center text-center">  
-                <div class="col-sm-6">
-                        <h2>{{tag.name}}</h2>
-                </div>
-        </div>              
-        <br>
-        {%endif%}
         {%include "tasks/tasksList.html"%}      
 </div>
 {%endblock%}
