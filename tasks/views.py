@@ -12,7 +12,11 @@ class Index(WelcomeView, View):
     def get(self, request):
         if request.user.is_authenticated:
             self.template = 'tasks/index.html'
-            tasks = Task.objects.filter(user=request.user).filter(parent=None).order_by('date_of_creation')[::-1]
+            self.done = False
+            if(request.GET.get("done")):
+                self.done = True
+            tasks = Task.objects.filter(user=request.user).filter(
+                parent=None).filter(done=self.done).order_by('date_of_creation')[::-1]
             self.context['tasks'] = tasks
         return render(request, self.template, self.context)
 
@@ -23,7 +27,8 @@ class TaskDetail(WelcomeView, View):
             self.template = 'tasks/detail.html'
             task = Task.objects.get(slug=task_slug)
             self.context['main_task'] = task
-            self.context['tasks'] = task.children.all().order_by('date_of_creation')[::-1]
+            self.context['tasks'] = task.children.all().order_by(
+                'date_of_creation')[::-1]
         return render(request, self.template, self.context)
 
 
@@ -71,16 +76,19 @@ class CreateTask(WelcomeView, View):
     def get(self, request, **kwargs):
         if request.user.is_authenticated:
             self.get_context()
+            if kwargs.get('task_slug'):
+                print(self.context['form']['tag'])
+                self.context['parent'] = self.parent
         return render(request, self.template, self.context)
 
     def post(self, request, **kwargs):
         if request.user.is_authenticated:
-            self.get_context(request.POST)
+            self.get_context(post=request.POST)
             if kwargs.get('task_slug'):
                 self.parent = Task.objects.get(slug=kwargs.get('task_slug'))
                 self.url = self.parent.get_absolute_url()
             if self.context['form'].is_valid():
-                try:                    
+                try:
                     self.create_task(request)
                     return redirect(self.url)
                 except:
@@ -89,15 +97,14 @@ class CreateTask(WelcomeView, View):
 
     def get_context(self, post=None):
         self.template = 'tasks/createTask.html'
-        self.context['form'] = CreateTaskForm() if post == None else CreateTaskForm(post)
+        self.context['form'] = CreateTaskForm(
+        ) if post == None else CreateTaskForm(post)
         self.context['button'] = 'save'
         self.parent = None
         self.url = '/'
 
     def create_task(self, request):
-        
         task_title = self.context['form'].cleaned_data['title']
-        print(self.context['form'].cleaned_data['title'])
         task = Task(
             user=request.user,
             title=task_title,
@@ -105,21 +112,20 @@ class CreateTask(WelcomeView, View):
             tag=self.context['form'].cleaned_data['tag'],
             slug=request.user.username + "_" + slugify(task_title)
         )
-        
-        task.parent=self.parent
-        
+        task.parent = self.parent
         task.save()
 
 
 class DoneTask(View):
+    def get(self, request):
+        return redirect("/")
+
     def post(self, request):
         print(request.POST["slug"])
         task = Task.objects.get(slug=request.POST["slug"])
-        
         for child in task.children.all():
             child.done = True
             child.save()
-
         task.done = True
         task.save()
         return HttpResponse("Ok", content_type="application/json")
