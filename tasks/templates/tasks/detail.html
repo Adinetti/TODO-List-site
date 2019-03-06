@@ -15,8 +15,11 @@
             <a class="btn btn-primary"
                 href="{%if main_task.parent%}{{main_task.parent.get_absolute_url}}{%else%}/{%endif%}"
                 role="button">Parent</a>
-            <button type="button" class="btn btn-primary mr-auto" data-toggle="modal"
-                data-target="#exampleModal">Done</button>
+
+            {%if main_task.done%}
+                <button type="button" class="btn btn-primary mr-auto" data-toggle="modal"
+                    data-target="#exampleModal">Done</button>
+            {%endif%}
         </div>
     </div>
     <div class="row bg-info text-white p-2">

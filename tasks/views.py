@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect, HttpResponse
 from django.contrib.auth import authenticate, login, logout
 from django.views.generic import View
 from django.utils.text import slugify
+from django.core.paginator import Paginator
 
 from .utils import WelcomeView
 from .models import Task, Tag
@@ -13,12 +14,11 @@ class Index(WelcomeView, View):
         super().init()
         if request.user.is_authenticated:            
             self.template = 'tasks/index.html'
-            self.done = False
-            if(request.GET.get("done")):
-                self.done = True
-            tasks = Task.objects.filter(user=request.user).filter(
-                parent=None).filter(done=self.done).order_by('date_of_creation')[::-1]
-            self.context['tasks'] = tasks
+            self.done = True if request.GET.get("done") else False
+            tasks = Task.objects.filter(user = request.user).filter(parent=None).filter(done = self.done)
+            paginator = Paginator(tasks, 10)
+            page = request.GET.get('page')
+            self.context['tasks'] = paginator.get_page(page)
         return render(request, self.template, self.context)
 
 
@@ -27,7 +27,7 @@ class TaskDetail(WelcomeView, View):
         super().init()
         if request.user.is_authenticated:            
             self.template = 'tasks/detail.html'
-            task = Task.objects.get(slug=task_slug)
+            task = Task.objects.get(slug = task_slug)
             self.context['main_task'] = task
             self.context['edit_task_url'] = "/edit_task/" + task.slug
             self.context['tasks'] = task.children.all().order_by(
@@ -40,8 +40,8 @@ class TagIndex(WelcomeView, View):
         super().init()
         if request.user.is_authenticated:
             self.template = 'tasks/tagIndex.html'
-            task_tag = Tag.objects.get(slug=tag_slug)
-            tasks = Task.objects.filter(user=request.user).filter(tag=task_tag)
+            task_tag = Tag.objects.get(slug = tag_slug)
+            tasks = Task.objects.filter(user = request.user).filter(tag = task_tag)
             self.context['tasks'] = tasks
             self.context['tagName'] = task_tag.name
         return render(request, self.template, self.context)
@@ -67,8 +67,8 @@ class LoginUser(View):
         if self.context['form'].is_valid():
             user = authenticate(
                 request,
-                username=self.context['form'].cleaned_data["username"],
-                password=self.context['form'].cleaned_data["password"]
+                username = self.context['form'].cleaned_data["username"],
+                password = self.context['form'].cleaned_data["password"]
             )
             if user:
                 login(request, user)
@@ -112,10 +112,10 @@ class CreateTask(WelcomeView, View):
     def create_task(self, request):
         self.task_title = self.context['form'].cleaned_data['title']
         self.task = Task(
-            user=request.user,
-            title=self.task_title,
-            body=self.context['form'].cleaned_data['body'],
-            slug=request.user.username + "_" + slugify(self.task_title)
+            user = request.user,
+            title = self.task_title,
+            body = self.context['form'].cleaned_data['body'],
+            slug = request.user.username + "_" + slugify(self.task_title)
         )
         if request.POST['task_tag'] != '---':   
             self.task.tag = Tag.objects.get(id=int(request.POST['task_tag']))

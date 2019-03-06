@@ -33,3 +33,6 @@ class Task(models.Model):
 
     def get_absolute_url(self):
         return "/task/{}".format(self.slug)
+
+    class Meta:
+        ordering = ['-date_of_creation']
