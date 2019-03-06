@@ -13,5 +13,22 @@
         </div>
 </div>              
 <br>
-{%include "tasks/form.html"%}     
+<div class="row justify-content-center">
+        <div class="col-sm-3">
+                <form method="post">
+                        {% csrf_token %}
+                        {%include "tasks/form.html"%} 
+                        <div class="form-group">
+                                <label for="inputState">Tag</label>
+                                <select id="inputState" class="form-control" name="task_tag">
+                                        <option selected>---</option>
+                                        {%for tag in tags%}
+                                        <option value="{{tag.id}}">{{tag.title}}</option>
+                                        {%endfor%}
+                                </select>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Save</button>
+                </form>
+        </div>
+</div>    
 {%endblock%}

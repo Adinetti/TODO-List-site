@@ -17,6 +17,16 @@ class LogingForm(forms.Form):
         'placeholder': 'Enter password'
     })
 
+class CreateTagForm(forms.ModelForm):
+    class Meta:
+        model = Tag
+        fields = ['name']
+        widgets = {
+            'name': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Tag name'
+            })
+            }
 
 class CreateTaskForm(forms.ModelForm):
     class Meta:
@@ -32,7 +42,3 @@ class CreateTaskForm(forms.ModelForm):
                 'placeholder': 'Describe task'
             })
         }
-
-    def __init__(self, *args, **kwargs):
-        super(CreateTaskForm, self).__init__(*args, **kwargs)
-        #self.fields['tag'].queryset = Tag.objects.filter(user_id=self.instance.user)

@@ -1,29 +1,11 @@
-<div class="row justify-content-center">
-        <div class="col-sm-3">
-                <form method="post">
-                        {% csrf_token %}
-                        {% for field in form %}
-                        <div class="form-group">
-                                {% for message in field.errors%}
-                                <div class="alert alert-danger" role="alert">
-                                        {{message}}
-                                </div>
-                                {% endfor %}
-                                {{field.label}}
-                                {{field}}
-                        </div>
-                        {% endfor %}
-                        <div class="form-group">
-                                <label for="inputState">Tag</label>
-                                <select id="inputState" class="form-control" name="task_tag">
-                                        <option selected>---</option>
-                                        {%for tag in tags%}
-                                        <option value="{{tag.id}}">{{tag}}</option>
-                                        {%endfor%}
-                                </select>
-                        </div>
-
-                        <button type="submit" class="btn btn-primary">{{button}}</button>
-                </form>
+{% for field in form %}
+<div class="form-group">
+        {% for message in field.errors%}
+        <div class="alert alert-danger" role="alert">
+                {{message}}
         </div>
+        {% endfor %}
+        {{field.label}}
+        {{field}}
 </div>
+{% endfor %}

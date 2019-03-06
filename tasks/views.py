@@ -5,7 +5,7 @@ from django.utils.text import slugify
 
 from .utils import WelcomeView
 from .models import Task, Tag
-from .forms import LogingForm, CreateTaskForm
+from .forms import LogingForm, CreateTaskForm, CreateTagForm
 
 
 class Index(WelcomeView, View):
@@ -159,12 +159,40 @@ class EditTask(WelcomeView, View):
         self.task.save()
 
 
+class CreateTag(WelcomeView, View):
+    def get(self, request):
+        super().init()
+        if request.user.is_authenticated:
+            self.context['form'] = CreateTagForm()
+            self.template = 'tasks/createTag.html'
+        return render(request, self.template, self.context)    
+
+    def post(self, request):
+        super().init()
+        if request.user.is_authenticated:
+            self.template = 'tasks/createTag.html'
+            self.context['form'] = CreateTagForm(request.POST)
+            if self.context['form'].is_valid():
+                try:                    
+                    self.name = self.context['form'].cleaned_data['name']
+                    self.slug = request.user.username + "_" + slugify(self.name)
+                    tag = Tag(
+                        user = request.user,
+                        name = self.name,
+                        slug = self.slug
+                    )                    
+                    tag.save()
+                    return redirect("/")
+                except:
+                    return render(request, self.template, self.context)
+        return render(request, self.template, self.context)
+
+
 class DoneTask(View):
     def get(self, request):
         return redirect("/")
 
     def post(self, request):
-        print(request.POST["slug"])
         task = Task.objects.get(slug=request.POST["slug"])
         for child in task.children.all():
             child.done = True
