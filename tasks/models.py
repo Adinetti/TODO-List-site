@@ -4,7 +4,6 @@ from django.contrib.auth.models import User
 
 class Tag(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    username = models.CharField(max_length=50, default="")
     name = models.CharField(max_length=50)
     slug = models.SlugField(max_length=120, unique=True)
 
