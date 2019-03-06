@@ -8,6 +8,7 @@ urlpatterns = [
     path('done_task', views.DoneTask.as_view(), name="doneTask"),
     path('create_task', views.CreateTask.as_view(), name="createTask"),
     path('add_to_task/<slug:task_slug>', views.CreateTask.as_view(), name="addToTask"),
+    path('edit_task/<slug:task_slug>', views.EditTask.as_view(), name="addToTask"),
     path('task/<slug:task_slug>', views.TaskDetail.as_view(), name="task"),
     path('', views.Index.as_view(), name="index"),
 ]

@@ -1,5 +1,5 @@
 from django import forms
-from .models import Task
+from .models import Task, Tag
 from django.core.exceptions import ValidationError
 from django.contrib.auth import authenticate
 
@@ -21,7 +21,7 @@ class LogingForm(forms.Form):
 class CreateTaskForm(forms.ModelForm):
     class Meta:
         model = Task
-        fields = ['title', 'body', 'tag']
+        fields = ['title', 'body']
         widgets = {
             'title': forms.TextInput(attrs={
                 'class': 'form-control',
@@ -30,9 +30,9 @@ class CreateTaskForm(forms.ModelForm):
             'body': forms.Textarea(attrs={
                 'class': 'form-control',
                 'placeholder': 'Describe task'
-            }),
-            'tag': forms.Select(attrs={
-                'class': 'form-control',
-                'placeholder': 'Tag name'
             })
         }
+
+    def __init__(self, *args, **kwargs):
+        super(CreateTaskForm, self).__init__(*args, **kwargs)
+        #self.fields['tag'].queryset = Tag.objects.filter(user_id=self.instance.user)

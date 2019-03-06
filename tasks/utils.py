@@ -3,5 +3,6 @@ from django.contrib.auth import authenticate, login, logout
 from django.views.generic import View
 
 class WelcomeView():
-    template = 'tasks/welcome.html'
-    context = {}
+    def init(self):
+        self.template = 'tasks/welcome.html'
+        self.context = {}

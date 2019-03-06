@@ -10,7 +10,8 @@ from .forms import LogingForm, CreateTaskForm
 
 class Index(WelcomeView, View):
     def get(self, request):
-        if request.user.is_authenticated:
+        super().init()
+        if request.user.is_authenticated:            
             self.template = 'tasks/index.html'
             self.done = False
             if(request.GET.get("done")):
@@ -23,10 +24,12 @@ class Index(WelcomeView, View):
 
 class TaskDetail(WelcomeView, View):
     def get(self, request, task_slug):
-        if request.user.is_authenticated:
+        super().init()
+        if request.user.is_authenticated:            
             self.template = 'tasks/detail.html'
             task = Task.objects.get(slug=task_slug)
             self.context['main_task'] = task
+            self.context['edit_task_url'] = "/edit_task/" + task.slug
             self.context['tasks'] = task.children.all().order_by(
                 'date_of_creation')[::-1]
         return render(request, self.template, self.context)
@@ -34,6 +37,7 @@ class TaskDetail(WelcomeView, View):
 
 class TagIndex(WelcomeView, View):
     def get(self, request, tag_slug):
+        super().init()
         if request.user.is_authenticated:
             self.template = 'tasks/tagIndex.html'
             task_tag = Tag.objects.get(slug=tag_slug)
@@ -74,16 +78,18 @@ class LoginUser(View):
 
 class CreateTask(WelcomeView, View):
     def get(self, request, **kwargs):
+        super().init()
         if request.user.is_authenticated:
-            self.get_context()
+            self.get_context(request)
             if kwargs.get('task_slug'):
-                print(self.context['form']['tag'])
+                self.parent = Task.objects.get(slug=kwargs.get('task_slug'))
                 self.context['parent'] = self.parent
         return render(request, self.template, self.context)
 
     def post(self, request, **kwargs):
+        super().init()
         if request.user.is_authenticated:
-            self.get_context(post=request.POST)
+            self.get_context(request, post=request.POST)
             if kwargs.get('task_slug'):
                 self.parent = Task.objects.get(slug=kwargs.get('task_slug'))
                 self.url = self.parent.get_absolute_url()
@@ -95,25 +101,62 @@ class CreateTask(WelcomeView, View):
                     return render(request, self.template, self.context)
         return render(request, self.template, self.context)
 
-    def get_context(self, post=None):
+    def get_context(self, request, post=None):
         self.template = 'tasks/createTask.html'
-        self.context['form'] = CreateTaskForm(
-        ) if post == None else CreateTaskForm(post)
+        self.context['form'] = CreateTaskForm() if post == None else CreateTaskForm(post)
         self.context['button'] = 'save'
+        self.context['tags'] = Tag.objects.filter(user=request.user)    
         self.parent = None
         self.url = '/'
 
     def create_task(self, request):
-        task_title = self.context['form'].cleaned_data['title']
-        task = Task(
+        self.task_title = self.context['form'].cleaned_data['title']
+        self.task = Task(
             user=request.user,
-            title=task_title,
+            title=self.task_title,
             body=self.context['form'].cleaned_data['body'],
-            tag=self.context['form'].cleaned_data['tag'],
-            slug=request.user.username + "_" + slugify(task_title)
+            slug=request.user.username + "_" + slugify(self.task_title)
         )
-        task.parent = self.parent
-        task.save()
+        if request.POST['task_tag'] != '---':   
+            self.task.tag = Tag.objects.get(id=int(request.POST['task_tag']))
+        self.task.parent = self.parent
+        self.task.save()
+
+
+class EditTask(WelcomeView, View):
+    def get(self, request, task_slug):
+        super().init()
+        if request.user.is_authenticated:
+            self.get_context(request, task_slug)
+        return render(request, self.template, self.context)
+
+    def post(self, request, task_slug):
+        super().init()
+        if request.user.is_authenticated:
+            self.get_context(request, task_slug, post=request.POST)
+            if self.context['form'].is_valid():
+                try:
+                    self.create_task(request)
+                    return redirect(self.url)
+                except:
+                    return render(request, self.template, self.context)
+        return render(request, self.template, self.context)
+
+    def get_context(self, request, task_slug, post=None):
+        self.template = 'tasks/createTask.html'
+        self.task = Task.objects.get(slug=task_slug)
+        data = {'title':self.task.title, 'body':self.task.body}
+        self.context['form'] = CreateTaskForm(data) if post == None else CreateTaskForm(post)
+        self.context['button'] = 'save'
+        self.context['tags'] = Tag.objects.filter(user=request.user)       
+        self.url = self.task.get_absolute_url()
+
+    def create_task(self, request):
+        self.task.title = self.context['form'].cleaned_data['title']
+        self.task.body = self.context['form'].cleaned_data['body'] 
+        if request.POST['task_tag'] != '---':   
+            self.task.tag = Tag.objects.get(id=int(request.POST['task_tag']))
+        self.task.save()
 
 
 class DoneTask(View):

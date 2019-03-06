@@ -1,13 +1,15 @@
 from django.db import models
 from django.contrib.auth.models import User
 
+
 class Tag(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
+    username = models.CharField(max_length=50, default="")
     name = models.CharField(max_length=50)
     slug = models.SlugField(max_length=120, unique=True)
 
     def __str__(self):
-        return self.name
+        return self.slug
 
     def get_absolute_url(self):
         return "/tag/{}".format(self.slug)
@@ -26,10 +28,9 @@ class Task(models.Model):
     deadline = models.DateTimeField(null=True, blank=True)
 
     def __str__(self):
-        return "{} ({}: {})".format(self.title, 
-                                    self.user.username, 
+        return "{} ({}: {})".format(self.title,
+                                    self.user.username,
                                     self.date_of_creation.isoformat(timespec='seconds'))
 
     def get_absolute_url(self):
         return "/task/{}".format(self.slug)
-

@@ -12,7 +12,17 @@
                                 {{field.label}}
                                 {{field}}
                         </div>
-                        {% endfor %}                        
+                        {% endfor %}
+                        <div class="form-group">
+                                <label for="inputState">Tag</label>
+                                <select id="inputState" class="form-control" name="task_tag">
+                                        <option selected>---</option>
+                                        {%for tag in tags%}
+                                        <option value="{{tag.id}}">{{tag}}</option>
+                                        {%endfor%}
+                                </select>
+                        </div>
+
                         <button type="submit" class="btn btn-primary">{{button}}</button>
                 </form>
         </div>
