@@ -194,9 +194,10 @@ class DoneTask(View):
 
     def post(self, request):
         task = Task.objects.get(slug=request.POST["slug"])
+        done = True if request.POST["done"] == "true" else False
         for child in task.children.all():
-            child.done = True
+            child.done = done
             child.save()
-        task.done = True
+        task.done = done
         task.save()
         return HttpResponse("Ok", content_type="application/json")

@@ -16,9 +16,12 @@
                 href="{%if main_task.parent%}{{main_task.parent.get_absolute_url}}{%else%}/{%endif%}"
                 role="button">Parent</a>
 
-            {%if main_task.done%}
-                <button type="button" class="btn btn-primary mr-auto" data-toggle="modal"
-                    data-target="#exampleModal">Done</button>
+            {%if main_task.done %}
+            <button type="button" class="btn btn-primary mr-auto" data-toggle="modal"
+                data-target="#exampleModal">Undone</button>
+            {%else%}
+            <button type="button" class="btn btn-primary mr-auto" data-toggle="modal"
+                data-target="#exampleModal">Done</button>
             {%endif%}
         </div>
     </div>
@@ -43,7 +46,11 @@
                 </button>
             </div>
             <div class="modal-body">
+                {%if main_task.done %}
+                <p>Are you sure undone this task?</p>
+                {%else%}
                 <p>Are you sure done this task?</p>
+                {%endif%}
             </div>
             <div class="modal-footer">
                 {% csrf_token %}
@@ -61,8 +68,13 @@
     button.onclick = function () {
         let xhr = new XMLHttpRequest();
         let csrftoken = document.querySelector("[name=csrfmiddlewaretoken]");
-        data = "slug=" + "{{main_task.slug}}";        
-        
+        data = "slug=" + "{{main_task.slug}}";
+        {%if main_task.done %}
+        data += "&done=false";
+        {%else%}
+        data += "&done=true";
+        {% endif %}
+
         xhr.open("POST", "{%url 'doneTask'%}", true);
         xhr.setRequestHeader("X-CSRFToken", csrftoken.value);
         xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
@@ -73,11 +85,17 @@
             if (xhr.status != 200) {
                 alert(xhr.status + ': ' + xhr.statusText);
             } else {
-                document.getElementById("main_task").setAttribute("class", "row pt-2 bg-success text-white");
-                document.getElementById("main_task_title").innerHTML = "{{main_task.title|capfirst}} (done)";
+                {%if main_task.done %}
+                let taskStyle = "row pt-2";
+                let cardStyle = "card";
+                {%else%}
+                let taskStyle = "row pt-2 bg-success text-white";
+                let cardStyle = "card bg-success text-white";
+                {% endif %}
+                document.getElementById("main_task").setAttribute("class", taskStyle);
                 let cards = document.querySelectorAll("[name=task_card]");
-                for(let card of cards){
-                    card.setAttribute("class", "card bg-success text-white mb-3");
+                for (let card of cards) {
+                    card.setAttribute("class", cardStyle);
                 }
             }
         }
