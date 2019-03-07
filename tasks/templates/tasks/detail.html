@@ -2,7 +2,7 @@
 {%block title%}| Task: {{main_task.title}}{%endblock%}
 
 {%block addTaskButton%}
-<a class="btn btn-primary" href="/add_to_task/{{main_task.slug}}" role="button">Add task</a>
+<a class="btn btn-primary" href="/add_to_task/{{main_task.slug}}" role="button">Добавить задачу</a>
 {%endblock%}
 
 {%block content%}
@@ -14,14 +14,14 @@
         <div class="col-auto">
             <a class="btn btn-primary"
                 href="{%if main_task.parent%}{{main_task.parent.get_absolute_url}}{%else%}/{%endif%}"
-                role="button">Parent</a>
+                role="button">К родителю</a>
 
             {%if main_task.done %}
             <button type="button" class="btn btn-primary mr-auto" data-toggle="modal"
-                data-target="#exampleModal">Undone</button>
+                data-target="#exampleModal">Возобновить</button>
             {%else%}
             <button type="button" class="btn btn-primary mr-auto" data-toggle="modal"
-                data-target="#exampleModal">Done</button>
+                data-target="#exampleModal">Закончить</button>
             {%endif%}
         </div>
     </div>
@@ -43,22 +43,28 @@
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel">Done this task</h5>
+                <h5 class="modal-title" id="exampleModalLabel">
+                    {%if main_task.done %}
+                    Возобновить
+                    {%else%}
+                    Закончить
+                    {%endif%}
+                </h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
             <div class="modal-body">
                 {%if main_task.done %}
-                <p>Are you sure undone this task?</p>
+                <p>Вы уверены, что хотите возобновить эту задачу?</p>
                 {%else%}
-                <p>Are you sure done this task?</p>
+                <p>Вы уверены, что хотите закончит эту задачу?</p>
                 {%endif%}
             </div>
             <div class="modal-footer">
                 {% csrf_token %}
-                <button type="button" class="btn btn-secondary" data-dismiss="modal" id="doneTask">Yes</button>
-                <button type="button" class="btn btn-primary" data-dismiss="modal">No</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal" id="doneTask">Да</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal">Нет</button>
             </div>
         </div>
     </div>

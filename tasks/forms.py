@@ -54,7 +54,7 @@ class CreateTagForm(forms.ModelForm):
         widgets = {
             'name': forms.TextInput(attrs={
                 'class': 'form-control',
-                'placeholder': 'Tag name'
+                'placeholder': 'Название тэга'
             })
         }
 
@@ -66,10 +66,10 @@ class CreateTaskForm(forms.ModelForm):
         widgets = {
             'title': forms.TextInput(attrs={
                 'class': 'form-control',
-                'placeholder': 'Task title'
+                'placeholder': 'Имя задания'
             }),
             'body': forms.Textarea(attrs={
                 'class': 'form-control',
-                'placeholder': 'Describe task'
+                'placeholder': 'Описание задания'
             })
         }
