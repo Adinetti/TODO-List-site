@@ -69,11 +69,11 @@
         let xhr = new XMLHttpRequest();
         let csrftoken = document.querySelector("[name=csrfmiddlewaretoken]");
         data = "slug=" + "{{main_task.slug}}";
-        {%if main_task.done %}
+        {% if main_task.done %}
         data += "&done=false";
-        {%else%}
+        {% else %}
         data += "&done=true";
-        {% endif %}
+        {% endif %}        
 
         xhr.open("POST", "{%url 'doneTask'%}", true);
         xhr.setRequestHeader("X-CSRFToken", csrftoken.value);
@@ -86,11 +86,11 @@
                 alert(xhr.status + ': ' + xhr.statusText);
             } else {
                 {%if main_task.done %}
-                let taskStyle = "row pt-2";
-                let cardStyle = "card";
+                    let taskStyle = "row pt-2";
+                    let cardStyle = "card";
                 {%else%}
-                let taskStyle = "row pt-2 bg-success text-white";
-                let cardStyle = "card bg-success text-white";
+                    let taskStyle = "row pt-2 bg-success text-white";
+                    let cardStyle = "card bg-success text-white";
                 {% endif %}
                 document.getElementById("main_task").setAttribute("class", taskStyle);
                 let cards = document.querySelectorAll("[name=task_card]");
