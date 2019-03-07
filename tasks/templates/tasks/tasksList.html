@@ -3,26 +3,27 @@
         <div class="col-sm-6">
                 <div class="card {%if task.done%}bg-success text-white{%else%}bg-light{%endif%} mb-3" name="task_card">
                         <div class="card-body">
-                                <h4 class="card-title">{{task.title | capfirst}} {%if task.is_done%}(done){%endif%}</h4>
+                                <h4 class="card-title">{{task.title | capfirst}} {%if task.is_done%}(Сделано){%endif%}</h4>
                                 <p class="card-text">{{task.body|truncatewords:3}}</p>
                         </div>
                         <div class="card-footer bg-transparent text-right">
                                 {%if task.tag%}
                                 <a href="{{task.tag.get_absolute_url}}" class="badge badge-secondary mr-1">{{task.tag.name}}</a>
                                 {%endif%}
-                                <a href="{{task.get_absolute_url}}" class="btn btn-primary text-right">open</a>
+                                <a href="{{task.get_absolute_url}}" class="btn btn-primary text-right">Открыть</a>
                         </div>
                 </div>
         </div>
 </div>
 {%endfor%}
 
+{% if tasks.has_next or tasks.has_previous%}
 <div class="row justify-content-center">
         <nav aria-label="Page navigation example">
                 <ul class="pagination">
                         {% if tasks.has_previous %}
                                 <li class="page-item">
-                                        <a class="page-link"href="?page={{ tasks.previous_page_number }}">Next</a>
+                                        <a class="page-link"href="?page={{ tasks.previous_page_number }}"><<</a>
                                 </li>
                         {% endif %}
 
@@ -41,9 +42,10 @@
 
                         {% if tasks.has_next %}
                                 <li class="page-item">
-                                        <a class="page-link"href="?page={{ tasks.next_page_number }}">Previous</a>
+                                        <a class="page-link"href="?page={{ tasks.next_page_number }}">>></a>
                                 </li>
                         {% endif %}
                 </ul>
         </nav>
 </div>
+{%endif%}

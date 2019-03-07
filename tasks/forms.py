@@ -3,19 +3,49 @@ from .models import Task, Tag
 from django.core.exceptions import ValidationError
 from django.contrib.auth import authenticate
 
+
 class LogingForm(forms.Form):
-    username = forms.CharField()
-    password = forms.CharField(widget = forms.PasswordInput)
+    username = forms.CharField(label="Логин")
+    password = forms.CharField(label="Пароль", widget=forms.PasswordInput)
 
     username.widget.attrs.update({
         'class': 'form-control',
-        'placeholder': 'Enter username'
+        'placeholder': 'Введите свой логин'
     })
 
     password.widget.attrs.update({
         'class': 'form-control',
-        'placeholder': 'Enter password'
+        'placeholder': 'Введите свой пароль'
     })
+
+
+class RegistrationForm(forms.Form):
+    username = forms.CharField(label="Логин")
+    password = forms.CharField(label="Пароль", widget=forms.PasswordInput)
+    checkPassword = forms.CharField(
+        label="Проверка пароля", widget=forms.PasswordInput)
+    email = forms.CharField(widget=forms.EmailInput)
+
+    username.widget.attrs.update({
+        'class': 'form-control',
+        'placeholder': 'Введите свой логин'
+    })
+
+    password.widget.attrs.update({
+        'class': 'form-control',
+        'placeholder': 'Введите свой пароль'
+    })
+
+    checkPassword.widget.attrs.update({
+        'class': 'form-control',
+        'placeholder': 'Введите свой пароль еще раз'
+    })
+
+    email.widget.attrs.update({
+        'class': 'form-control',
+        'placeholder': 'Введите свой email'
+    })
+
 
 class CreateTagForm(forms.ModelForm):
     class Meta:
@@ -26,7 +56,8 @@ class CreateTagForm(forms.ModelForm):
                 'class': 'form-control',
                 'placeholder': 'Tag name'
             })
-            }
+        }
+
 
 class CreateTaskForm(forms.ModelForm):
     class Meta:

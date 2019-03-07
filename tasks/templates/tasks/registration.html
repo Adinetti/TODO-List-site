@@ -10,17 +10,11 @@
             {%include "tasks/form.html"%}
             {% if error %}
             <div class="alert alert-danger" role="alert">
-                Пароль или логин некорректны.
+                {{message}}
             </div>
             {% endif %}
-            <button type="submit" class="btn btn-primary">Войти</button>
+            <button type="submit" class="btn btn-primary">Регистрация</button>
         </form>
     </div>
 </div> 
-
-<div class="row justify-content-center text-center">
-    <div class="col-sm-6">
-        <a href="{% url 'reg' %}">Регистрация</a>
-    </div>
-</div>
 {%endblock%}

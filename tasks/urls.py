@@ -4,6 +4,7 @@ from . import views
 urlpatterns = [    
     path('logout', views.LogoutUser.as_view(), name="logout"),
     path('login', views.LoginUser.as_view(), name="login"),
+    path('reg', views.Registration.as_view(), name="reg"),
     path('tag/<slug:tag_slug>', views.TagIndex.as_view(), name="tag"),
     path('done_task', views.DoneTask.as_view(), name="doneTask"),
     path('create_task', views.CreateTask.as_view(), name="createTask"),

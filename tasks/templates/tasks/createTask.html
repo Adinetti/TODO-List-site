@@ -6,9 +6,9 @@
 <div class="row justify-content-center text-center">  
         <div class="col-sm-6">
                 {%if parent%}
-                <h2>Add task to {{parent.title}}:</h2>
+                <h2>Добавить задачу к {{parent.title}}:</h2>
                 {%else%}
-                <h2>Create new task:</h2>
+                <h2>Создать новую задачу</h2>
                 {%endif%}
         </div>
 </div>              
@@ -19,7 +19,7 @@
                         {% csrf_token %}
                         {%include "tasks/form.html"%} 
                         <div class="form-group">
-                                <label for="inputState">Tag</label>
+                                <label for="inputState">Тэг</label>
                                 <select id="inputState" class="form-control" name="task_tag">
                                         <option selected>---</option>
                                         {%for tag in tags%}
@@ -27,7 +27,7 @@
                                         {%endfor%}
                                 </select>
                         </div>
-                        <button type="submit" class="btn btn-primary">Save</button>
+                        <button type="submit" class="btn btn-primary">Создать</button>
                 </form>
         </div>
 </div>    
